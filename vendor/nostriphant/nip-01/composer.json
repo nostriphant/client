@@ -1,0 +1,40 @@
+{
+    "name": "nostriphant/nip-01",
+    "description": "Nostr NIP-01 implementation in PHP",
+    "type": "library",
+    "require": {
+        "php": "^8.4",
+        "ext-secp256k1_nostr": "*",
+        "simplito/elliptic-php": "^1.0",
+        "nostriphant/functional": "^2.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "nostriphant\\NIP01\\": "src/",
+            "nostriphant\\NIP01Tests\\": "tests/"
+        }
+    },
+    "autoload-dev": {
+        "files": ["tests/Pest.php"]
+    },
+    "authors": [
+        {
+            "name": "Rik Meijer",
+            "email": "rik@nostriphant.dev"
+        }
+    ],
+    "require-dev": {
+        "pestphp/pest": "^2.35"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": [
+            "./vendor/bin/pest"
+        ]
+    }
+}

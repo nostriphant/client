@@ -1,0 +1,42 @@
+{
+    "name": "nostriphant/client",
+    "description": "Simple Nostr client",
+    "type": "project",
+    "require": {
+        "php": "^8.4",
+        "amphp/websocket-client": "^2.0",
+        "nostriphant/nip-01": "^2.0",
+        "nostriphant/functional": "^2.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "nostriphant\\Client\\": "src/",
+            "nostriphant\\ClientTests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Rik Meijer",
+            "email": "rik@nostriphant.dev"
+        }
+    ],
+    "require-dev": {
+        "pestphp/pest": "^2.35"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": [
+            "./vendor/bin/pest"
+        ],
+        "next": [
+            "git tag -f `cat VERSION` @no_additional_args",
+            "echo @additional_args > VERSION",
+            "git commit -am 'start VERSION @additional_args'"
+        ]
+    }
+}
