@@ -19,7 +19,7 @@ readonly class Client {
         
         $bootstrap_callback(new Speech($this->connection));
         
-        return fn(callable $shutdown_callback) => (new Await(fn() => \Amp\trapSignal([SIGINT, SIGTERM], false)))(function(int $signal) use ($shutdown_callback) {
+        return fn(callable $shutdown_callback) => (new Await(fn() => \Amp\trapSignal([SIGINT, SIGTERM])))(function(int $signal) use ($shutdown_callback) {
             $shutdown_callback($signal);
             $this->connection->close();
         });
