@@ -2,42 +2,26 @@
 
 namespace nostriphant\Client;
 
-use nostriphant\Transpher\Nostr\Transmission;
-use nostriphant\NIP01\Message;
 use nostriphant\Functional\Await;
 
 readonly class Client {
     
-    private function __construct(private string $relay_url) {
+    public function __construct(private \Amp\Websocket\Client\WebsocketConnection $connection) {
     }
     
     public static function connectToUrl(string $url) {
-        return new self($url);
+        return new self(\Amp\Websocket\Client\connect($url, new \Amp\NullCancellation()));
     }
     
     public function __invoke(callable $bootstrap_callback, callable $response_callback): callable {
-        $connection = \Amp\Websocket\Client\connect($this->relay_url, new \Amp\NullCancellation());
+        $listener = new Hearing($this->connection);
+        \Amp\async(fn() => $listener($response_callback));
         
-        \Amp\async(function() use ($connection, $response_callback) {
-            foreach ($connection as $message) {
-                $response_callback(Message::decode($message->buffer()));
-            }
-        });
-        $bootstrap_callback(new class($connection) implements Transmission {
-            public function __construct(private \Amp\Websocket\Client\WebsocketConnection $connection) {
-
-            }
-
-            #[\Override]
-            public function __invoke(Message $message): bool {
-                $this->connection->sendText($message);
-                return true;
-            }
-
-        });
-        return fn(callable $shutdown_callback) => (new Await(fn() => \Amp\trapSignal([SIGINT, SIGTERM])))(function(int $signal) use ($shutdown_callback, $connection) {
+        $bootstrap_callback(new Speech($this->connection));
+        
+        return fn(callable $shutdown_callback) => (new Await(fn() => \Amp\trapSignal([SIGINT, SIGTERM], false)))(function(int $signal) use ($shutdown_callback) {
             $shutdown_callback($signal);
-            $connection->close();
+            $this->connection->close();
         });
     }
 }
