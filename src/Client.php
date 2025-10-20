@@ -8,15 +8,15 @@ use nostriphant\Functional\Await;
 
 readonly class Client {
     
-    public function __construct(private string $relay_url, private \Closure $response_callback) {
+    public function __construct(private string $relay_url) {
     }
     
-    public function __invoke(callable $bootstrap_callback): callable {
+    public function __invoke(callable $bootstrap_callback, callable $response_callback): callable {
         $connection = \Amp\Websocket\Client\connect($this->relay_url, new \Amp\NullCancellation());
         
-        \Amp\async(function() use ($connection) {
+        \Amp\async(function() use ($connection, $response_callback) {
             foreach ($connection as $message) {
-                ($this->response_callback)(Message::decode($message->buffer()));
+                $response_callback(Message::decode($message->buffer()));
             }
         });
         $bootstrap_callback(new class($connection) implements Transmission {
