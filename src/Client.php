@@ -8,7 +8,11 @@ use nostriphant\Functional\Await;
 
 readonly class Client {
     
-    public function __construct(private string $relay_url) {
+    private function __construct(private string $relay_url) {
+    }
+    
+    public static function connectToUrl(string $url) {
+        return new self($url);
     }
     
     public function __invoke(callable $bootstrap_callback, callable $response_callback): callable {
