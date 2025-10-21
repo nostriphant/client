@@ -1,7 +1,7 @@
 <?php
 
 namespace nostriphant\Client;
-use nostriphant\NIP01\Message;
+
 readonly class Client {
     
     public function __construct(private \Amp\Websocket\Client\WebsocketConnection $connection) {
@@ -16,8 +16,10 @@ readonly class Client {
         $listener = new Hearing($this->connection);
         
         return function(callable $response_callback) use ($listener) : void {
-            $future = \Amp\async(fn() => $listener(fn(Message $message) => $response_callback($message, fn() => $this->connection->close()))); 
+            $future = \Amp\async(fn() => $listener($response_callback)); 
+        
             $future->await(new \Amp\SignalCancellation([SIGINT, SIGTERM]));
+            $this->connection->close();
         };
     }
 }

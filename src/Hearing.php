@@ -10,8 +10,15 @@ readonly class Hearing {
     }
     
     public function __invoke(callable $response_callback) : void {
+        $listening = true;
         foreach ($this->connection as $message) {
-            $response_callback(Message::decode($message->read()));
+            $response_callback(Message::decode($message->read()), function() use (&$listening) {
+                $listening = false;
+            });
+            
+            if ($listening === false) {
+                break;
+            }
         }
     }
 }
