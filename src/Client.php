@@ -1,27 +1,23 @@
 <?php
 
 namespace nostriphant\Client;
-
-use nostriphant\Functional\Await;
-
+use nostriphant\NIP01\Message;
 readonly class Client {
     
     public function __construct(private \Amp\Websocket\Client\WebsocketConnection $connection) {
     }
     
     public static function connectToUrl(string $url) {
-        return new self(\Amp\Websocket\Client\connect($url, new \Amp\NullCancellation()));
+        return new self(\Amp\Websocket\Client\connect($url, new \Amp\SignalCancellation([SIGINT, SIGTERM])));
     }
     
-    public function __invoke(callable $bootstrap_callback, callable $response_callback): callable {
-        $listener = new Hearing($this->connection);
-        \Amp\async(fn() => $listener($response_callback));
+    public function __invoke(callable $speak_callback): callable {
+        $speak_callback(new Speech($this->connection));
         
-        $bootstrap_callback(new Speech($this->connection));
-        
-        return fn(callable $shutdown_callback) => (new Await(fn() => \Amp\trapSignal([SIGINT, SIGTERM])))(function(int $signal) use ($shutdown_callback) {
-            $shutdown_callback($signal);
-            $this->connection->close();
-        });
+        return function(callable $response_callback) : void {
+            $listener = new Hearing($this->connection);
+            $future = \Amp\async(fn() => $listener(fn(Message $message) => $response_callback($message, fn() => $this->connection->close()))); 
+            $future->await(new \Amp\SignalCancellation([SIGINT, SIGTERM]));
+        };
     }
 }
