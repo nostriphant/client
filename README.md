@@ -8,15 +8,17 @@ Simple nostr php client
 use nostriphant\NIP01\Message;
 use nostriphant\Client\Client;
 
-$client = new Client('wss://nostr.example.org', function (Message $message) {
-    // code to handle incoming messages
+$client = Client::connectToUrl("wss://nos.lol");
+
+$listen = $client(function(\nostriphant\NIP01\Transmission $send) {
+    // connection has been established, start communicating here
+    $send(Message::event(new \nostriphant\NIP59\Rumor(time(), 'pubkey', 1, 'Hello World!', [])));
 });
 
-$listen = $client(function(callable $send) {
+listen(function(\nostriphant\NIP01\Message $message, callable $stop) {
+    // code to handle incoming messages
 
-    // connection has been established, start communicating here
-   $send(Message::event(new \nostriphant\NIP59\Rumor(time(), 'pubkey', 1, 'Hello World!', [])));
-
+    $stop(); // stops listening
 });
 
 $listen(fn(int $signal) =>  printf("Received signal %d, stopping client", $signal));
