@@ -13,9 +13,9 @@ readonly class Client {
     
     public function __invoke(callable $speak_callback): callable {
         $speak_callback(new Speech($this->connection));
+        $listener = new Hearing($this->connection);
         
-        return function(callable $response_callback) : void {
-            $listener = new Hearing($this->connection);
+        return function(callable $response_callback) use ($listener) : void {
             $future = \Amp\async(fn() => $listener(fn(Message $message) => $response_callback($message, fn() => $this->connection->close()))); 
             $future->await(new \Amp\SignalCancellation([SIGINT, SIGTERM]));
         };
