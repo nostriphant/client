@@ -1,7 +1,7 @@
 {
     "name": "nostriphant/client",
     "description": "Simple Nostr client",
-    "type": "project",
+    "type": "library",
     "require": {
         "php": "^8.4",
         "amphp/websocket-client": "^2.0",
