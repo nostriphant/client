@@ -12,14 +12,22 @@ readonly class Client {
     }
     
     public function __invoke(callable $speak_callback): callable {
-        $speak_callback(new Speech($this->connection));
+        $subscriptions = [];
+        
+        $speak = new Speech($this->connection);
+        $speak_callback($speak, function(array $filters, callable $reply) use ($speak, &$subscriptions) {
+            $subscription_id = bin2hex(random_bytes(4));
+            $subscriptions[$subscription_id] = $reply;
+            $speak(\nostriphant\NIP01\Message::req($subscription_id, ...$filters));
+        });
+        
         $listener = new Hearing($this->connection);
+        $future = \Amp\async(fn() => $listener(fn(\nostriphant\NIP01\Message $message) => match($message->type) {
+            'EVENT' => $subscriptions[$message->payload[0]](new \nostriphant\NIP01\Event(...$message->payload[1])),
+            default => error_log($message)
+        }));
         
-        return function(callable $response_callback) use ($listener) : void {
-            $future = \Amp\async(fn() => $listener($response_callback)); 
-        
-            $future->await(new \Amp\SignalCancellation([SIGINT, SIGTERM]));
-            $this->connection->close();
-        };
+        $future->await(new \Amp\SignalCancellation([SIGINT, SIGTERM]));
+        $this->connection->close();
     }
 }
