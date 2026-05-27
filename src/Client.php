@@ -43,7 +43,7 @@ readonly class Client {
             $subscription_id = bin2hex(random_bytes(32));
             $subscriptions[$subscription_id] = $reply;
             
-            error_log('Subscribing with filters' . json_encode($filters), E_USER_NOTICE);
+            error_log('Subscribing with filters: ' . json_encode($filters), E_USER_NOTICE);;
             $speak(\nostriphant\NIP01\Message::req($subscription_id, $filters));
             
             return fn() => $speak(\nostriphant\NIP01\Message::close($subscription_id));
