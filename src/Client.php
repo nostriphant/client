@@ -11,17 +11,29 @@ readonly class Client {
     }
     
     public static function connectToUrl(string ...$urls) {
-        static $attempts = 0;
-        try {
-            $connection = new self(...array_map(fn(string $url) => \Amp\Websocket\Client\connect($url, new \Amp\SignalCancellation([SIGINT, SIGTERM])), $urls));
-            $attempts = 0;
-            return $connection;
-        } catch (\Amp\Websocket\Client\WebsocketConnectException $e) {
-            error_log('Failed connecting, retry in 5 seconds');
-            sleep(5);
-            $attempts++;
-            return self::connectToUrl(...$urls);
+        $connections = [];
+        $attempts = 0;
+        foreach ($urls as $url) {
+            try {
+                retry:
+                $connections[] = \Amp\Websocket\Client\connect($url, new \Amp\SignalCancellation([SIGINT, SIGTERM]));
+            } catch (\Amp\Websocket\Client\WebsocketConnectException $e) {
+                error_log('Failed connecting, retry in 5 seconds');
+                sleep(5);
+                $attempts++;
+                if ($attempts<5) {
+                    goto retry;
+                }
+            } catch (\Amp\Http\Client\SocketException $e) {
+                error_log('Failed connecting to ' . $url.': ' . $e->getMessage());
+                continue;
+            } catch (\Amp\TimeoutException $e) {
+                error_log('Failed connecting to ' . $url.': timeout');
+                continue;
+            }
         }
+
+        return new self(...$connections);
     }
     
     public function __invoke(callable $speak_callback): callable {
@@ -36,18 +48,16 @@ readonly class Client {
         
         $event = function(\nostriphant\NIP01\Event $event, callable $reply) use ($speak, &$events) {
             $events[$event->id] = $reply;
-            $speak(\nostriphant\NIP01\Message::event($event));
+            return $speak(\nostriphant\NIP01\Message::event($event));
         };
         
         $subscribe = function(array $filters, callable $reply) use ($speak, &$subscriptions) {
             $subscription_id = bin2hex(random_bytes(32));
-            $subscriptions[$subscription_id] = $reply;
+            $subscriptions[$subscription_id] = fn(\nostriphant\NIP01\Event $event) => $reply($event, fn() => $speak(\nostriphant\NIP01\Message::close($subscription_id)));
             
             error_log('Subscribing with filters' . json_encode($filters), E_USER_NOTICE);
-            $speak(\nostriphant\NIP01\Message::req($subscription_id, $filters), fn() => $speak(\nostriphant\NIP01\Message::close($subscription_id)));
+            return $speak(\nostriphant\NIP01\Message::req($subscription_id, $filters));
         };
-        
-        
         
         $receive_message = function(\nostriphant\NIP01\Message $message) use (&$subscriptions, &$events) {
             return match($message->type) {
