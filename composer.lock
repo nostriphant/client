@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "88467929220ad0e153c1c67543e9c083",
+    "content-hash": "a77885fa4735f3d2bb905a531552234c",
     "packages": [
         {
             "name": "amphp/amp",
@@ -551,6 +551,90 @@
                 }
             ],
             "time": "2025-08-16T20:41:23+00:00"
+        },
+        {
+            "name": "amphp/parallel",
+            "version": "v2.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amphp/parallel.git",
+                "reference": "37f5b2754fadc229c00f9416bd68fb8d04529a81"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amphp/parallel/zipball/37f5b2754fadc229c00f9416bd68fb8d04529a81",
+                "reference": "37f5b2754fadc229c00f9416bd68fb8d04529a81",
+                "shasum": ""
+            },
+            "require": {
+                "amphp/amp": "^3",
+                "amphp/byte-stream": "^2",
+                "amphp/cache": "^2",
+                "amphp/parser": "^1",
+                "amphp/pipeline": "^1",
+                "amphp/process": "^2",
+                "amphp/serialization": "^1",
+                "amphp/socket": "^2",
+                "amphp/sync": "^2",
+                "php": ">=8.1",
+                "revolt/event-loop": "^1"
+            },
+            "require-dev": {
+                "amphp/php-cs-fixer-config": "^2",
+                "amphp/phpunit-util": "^3",
+                "phpunit/phpunit": "^9",
+                "psalm/phar": "6.16.1"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Context/functions.php",
+                    "src/Context/Internal/functions.php",
+                    "src/Ipc/functions.php",
+                    "src/Worker/functions.php"
+                ],
+                "psr-4": {
+                    "Amp\\Parallel\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aaron Piotrowski",
+                    "email": "aaron@trowski.com"
+                },
+                {
+                    "name": "Niklas Keller",
+                    "email": "me@kelunik.com"
+                },
+                {
+                    "name": "Stephen Coakley",
+                    "email": "me@stephencoakley.com"
+                }
+            ],
+            "description": "Parallel processing component for Amp.",
+            "homepage": "https://github.com/amphp/parallel",
+            "keywords": [
+                "async",
+                "asynchronous",
+                "concurrent",
+                "multi-processing",
+                "multi-threading"
+            ],
+            "support": {
+                "issues": "https://github.com/amphp/parallel/issues",
+                "source": "https://github.com/amphp/parallel/tree/v2.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/amphp",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-05-16T16:54:01+00:00"
         },
         {
             "name": "amphp/parser",
@@ -1491,20 +1575,20 @@
         },
         {
             "name": "nostriphant/functional",
-            "version": "2.2.0",
+            "version": "2.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nostriphant/functional.git",
-                "reference": "0f79a5236342bb3b57d21a11628eaf4f780e667f"
+                "reference": "cdea328e74003e5589772824961a431c92020c2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nostriphant/functional/zipball/0f79a5236342bb3b57d21a11628eaf4f780e667f",
-                "reference": "0f79a5236342bb3b57d21a11628eaf4f780e667f",
+                "url": "https://api.github.com/repos/nostriphant/functional/zipball/cdea328e74003e5589772824961a431c92020c2b",
+                "reference": "cdea328e74003e5589772824961a431c92020c2b",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.3"
+                "php": "^8.4"
             },
             "require-dev": {
                 "pestphp/pest": "^2.35"
@@ -1523,15 +1607,15 @@
             "authors": [
                 {
                     "name": "Rik Meijer",
-                    "email": "rik@nostriphant.dev"
+                    "email": "nostriphant@rikmeijer.nl"
                 }
             ],
             "description": "Functional helper classes for nostriphant projects",
             "support": {
                 "issues": "https://github.com/nostriphant/functional/issues",
-                "source": "https://github.com/nostriphant/functional/tree/2.2.0"
+                "source": "https://github.com/nostriphant/functional/tree/2.6.4"
             },
-            "time": "2025-10-15T13:20:09+00:00"
+            "time": "2026-06-02T10:49:45+00:00"
         },
         {
             "name": "nostriphant/nip-01",

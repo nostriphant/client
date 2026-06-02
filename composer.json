@@ -6,7 +6,8 @@
         "php": "^8.4",
         "amphp/websocket-client": "^2.0",
         "nostriphant/nip-01": "^2.0",
-        "nostriphant/functional": "^2.2"
+        "nostriphant/functional": "^2.2",
+        "amphp/parallel": "^2.4"
     },
     "license": "MIT",
     "autoload": {
