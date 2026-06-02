@@ -22,7 +22,7 @@ readonly class SubscriptionFactory {
         ], fn($val) => !is_null($val));
         
         foreach ($tags as $tag => $tag_filter) {
-            $filters[ltrim($name, '#')] = $tag_filter;
+            $filters[$tag] = $tag_filter;
         }
         
         return new Subscription($id, $this->subscriptions, $this->speak, $filters);
