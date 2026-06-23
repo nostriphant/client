@@ -22,7 +22,7 @@ it('client can be instantiated', function () {
     $connection->shouldReceive('close');
     
     
-    $client = new Client($connection);
+    $client = new Client('error_log', $connection);
     $message_received = false;
     $client(function(callable $send_event, callable $subscribe) use (&$message_received, &$queue, $connection, &$serving) {
         $subscription = $subscribe(authors: []);
@@ -39,7 +39,7 @@ it('client can be instantiated', function () {
 });
 
 it('can connect to wss://nos.lol, submit an req and wait for events to come back', function() {
-    $client = Client::connectToUrl("wss://nos.lol");
+    $client = Client::connectToUrl('error_log', "wss://nos.lol");
     
     $client(function(callable $send_event, callable $subscribe) {
         $subscription = $subscribe(kinds: [1], limit: 1);

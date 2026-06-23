@@ -6,7 +6,7 @@ final readonly class Subscription {
     
     private \Closure $speak;
     
-    public function __construct(private string $id, private \nostriphant\Functional\Index $subscriptions, callable $speak, private array $filters) {
+    public function __construct(public string $id, private \nostriphant\Functional\Index $subscriptions, callable $speak, private array $filters) {
         $this->speak = \Closure::fromCallable($speak);
     }
     

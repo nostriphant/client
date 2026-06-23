@@ -4,19 +4,21 @@ namespace nostriphant\Client;
 
 readonly class Client {
     
+    private \Closure $log;
+    
     private array $connections;
     
     private array $speakers;
     private array $listeners;
     
-    public function __construct(\Amp\Websocket\Client\WebsocketConnection ...$connections) {
+    public function __construct(callable $log, \Amp\Websocket\Client\WebsocketConnection ...$connections) {
+        $this->log = \Closure::fromCallable($log);
         $this->connections = $connections;
-        
         $this->speakers = array_map(fn($connection) => new Speech($connection), $this->connections);
         $this->listeners = array_map(fn($connection) => new Hearing($connection), $this->connections);
     }
     
-    public static function connectToUrl(string ...$urls) {
+    public static function connectToUrl(callable $log, string ...$urls) {
         $connections = [];
         $attempts = 0;
         foreach ($urls as $url) {
@@ -38,8 +40,7 @@ readonly class Client {
                 continue;
             }
         }
-
-        return new self(...$connections);
+        return new self($log, ...$connections);
     }
     
     public function __invoke(callable $speak_callback) : void {
@@ -61,8 +62,8 @@ readonly class Client {
         $futureListening = \Amp\async(fn() => \nostriphant\Functional\Iterator::walk($this->listeners, fn(Hearing $listener) => $listener(fn(\nostriphant\NIP01\Message $message, callable $stop) => match($message->type) {
             'EVENT' => $subscriptions[$message->payload[0]](new \nostriphant\NIP01\Event(...$message->payload[1]), $stop),
             'OK' => $events[$message->payload[0]]($message->payload[1], $message->payload[2], $stop),
-            'EOSE' => error_log('No more events in ' . $message->payload[0]),
-            default => error_log($message)
+            'EOSE' => ($this->log)('No more events in ' . $message->payload[0]),
+            default => ($this->log)($message)
         })));
         
         \Amp\Future\await([$futureSpeaking, $futureListening], new \Amp\SignalCancellation([SIGINT, SIGTERM]));
