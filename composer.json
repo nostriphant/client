@@ -32,7 +32,7 @@
     },
     "scripts": {
         "test": [
-            "./vendor/bin/pest"
+            "./vendor/bin/pest --parallel"
         ],
         "next": [
             "git tag -f `cat VERSION` @no_additional_args",
