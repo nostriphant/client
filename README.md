@@ -5,22 +5,24 @@ Simple nostr php client
 ```php
 <?php
 
-use nostriphant\NIP01\Message;
 use nostriphant\Client\Client;
 
-$client = Client::connectToUrl("wss://nos.lol");
+$client = Client::connectToUrl("wss://nos.lol", "wss://relay.damus.io");
 
-$listen = $client(function(\nostriphant\NIP01\Transmission $send) {
-    // connection has been established, start communicating here
-    $send(Message::event(new \nostriphant\NIP59\Rumor(time(), 'pubkey', 1, 'Hello World!', [])));
+$client(function(callable $send, callable $subscribe) {
+    $subscription = $subscribe(ids: ['hex_event_id']);
+    $subscription(function(?\nostriphant\NIP01\Event $event, callable $close, callable $stop) {
+        if (is_null($event)) {
+            // EOSE
+        } else {
+            // EVENT RECEIVED
+        }
+    });
+
+    $event = new \nostriphant\NIP01\Event(...);
+    $send($event, function(bool $accepted, string $reason, callable $stop) {
+        // handle response
+    });
 });
-
-listen(function(\nostriphant\NIP01\Message $message, callable $stop) {
-    // code to handle incoming messages
-
-    $stop(); // stops listening
-});
-
-$listen(fn(int $signal) =>  printf("Received signal %d, stopping client", $signal));
 
 ```
