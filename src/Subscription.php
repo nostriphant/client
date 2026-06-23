@@ -11,7 +11,7 @@ final readonly class Subscription {
     }
     
     public function __invoke(callable $reply) {
-        $this->subscriptions[$this->id] = fn(\nostriphant\NIP01\Event $event, callable $stop) => $reply($event, fn() => ($this->speak)(\nostriphant\NIP01\Message::close($this->id)), $stop);
+        $this->subscriptions[$this->id] = fn(?\nostriphant\NIP01\Event $event, callable $stop) => $reply($event, fn() => ($this->speak)(\nostriphant\NIP01\Message::close($this->id)), $stop);
         return ($this->speak)(\nostriphant\NIP01\Message::req($this->id, $this->filters));
     }
     

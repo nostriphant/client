@@ -62,7 +62,7 @@ readonly class Client {
         $futureListening = \Amp\async(fn() => \nostriphant\Functional\Iterator::walk($this->listeners, fn(Hearing $listener) => $listener(fn(\nostriphant\NIP01\Message $message, callable $stop) => match($message->type) {
             'EVENT' => $subscriptions[$message->payload[0]](new \nostriphant\NIP01\Event(...$message->payload[1]), $stop),
             'OK' => $events[$message->payload[0]]($message->payload[1], $message->payload[2], $stop),
-            'EOSE' => ($this->log)('No more events in ' . $message->payload[0]),
+            'EOSE' => $subscriptions[$message->payload[0]](null, $stop),
             default => ($this->log)($message)
         })));
         
