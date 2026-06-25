@@ -26,17 +26,17 @@ readonly class Client {
                 retry:
                 $connections[] = \Amp\Websocket\Client\connect($url, new \Amp\SignalCancellation([SIGINT, SIGTERM]));
             } catch (\Amp\Websocket\Client\WebsocketConnectException $e) {
-                error_log('Failed connecting, retry in 5 seconds');
+                $log('Failed connecting, retry in 5 seconds');
                 sleep(5);
                 $attempts++;
                 if ($attempts<5) {
                     goto retry;
                 }
             } catch (\Amp\Http\Client\SocketException $e) {
-                error_log('Failed connecting to ' . $url.': ' . $e->getMessage());
+                $log('Failed connecting to ' . $url.': ' . $e->getMessage());
                 continue;
-            } catch (\Amp\TimeoutException $e) {
-                error_log('Failed connecting to ' . $url.': timeout');
+            } catch (\Amp\Http\Client\TimeoutException $e) {
+                $log('Failed connecting to ' . $url.': timeout');
                 continue;
             }
         }
