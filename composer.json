@@ -5,7 +5,7 @@
     "require": {
         "php": "^8.4",
         "amphp/websocket-client": "^2.0",
-        "nostriphant/nip-01": "^2.0",
+        "nostriphant/nip-01": "^3.0",
         "nostriphant/functional": "^2.2"
     },
     "license": "MIT",
